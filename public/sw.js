@@ -1,4 +1,4 @@
-var staticCacheName = 'headline-static-v7';
+var staticCacheName = 'headline-static-v3';
 var contentImgsCache = 'headline-content-imgs';
 var allCaches = [
     staticCacheName,

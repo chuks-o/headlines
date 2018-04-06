@@ -42,7 +42,7 @@ nav {
     margin: 10px; }
   .container form {
     display: flex;
-    justify-content: space-around; }
+    justify-content: center; }
   .container input,
   .container select,
   .container button[type="submit"] {

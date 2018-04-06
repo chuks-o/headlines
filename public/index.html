@@ -5,26 +5,21 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="stylesheet" href="/stylesheets/css/app.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-  <!-- api key: d3119c6bc5da41b0b172a7f71466a063 -->
 </head>
 
 <body>
   <nav>
-    <ul>
-      <li>
-        <a>Headlines</a>
-      </li>
-    </ul>
+    <ul><li><a>Headlines</a></li></ul>
   </nav>
 
   <div class="container">
-    
+
     <div class="post-filter">
-      <form id="init-transaction-form">
-        <select name="email" id="customer-emails" required>
+      <form id="source-form">
+        <select name="source" id="source-names" required>
           <option value="null">Choose a source:</option>
         </select>
-        <button type="submit">+ Search</button>
+        <button type="submit"><i class="fa fa-search"></i> &nbsp; Search</button>
       </form>
     </div>
 
