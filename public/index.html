@@ -1,0 +1,38 @@
+<html>
+<head>
+  <title>Headlines</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="/stylesheets/css/app.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- api key: d3119c6bc5da41b0b172a7f71466a063 -->
+</head>
+
+<body>
+  <nav>
+    <ul>
+      <li>
+        <a>Headlines</a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    
+    <div class="post-filter">
+      <form id="init-transaction-form">
+        <select name="email" id="customer-emails" required>
+          <option value="null">Choose a source:</option>
+        </select>
+        <button type="submit">+ Search</button>
+      </form>
+    </div>
+
+    <!-- News Card -->
+    <div class="posts"></div>
+
+  </div>
+
+  <script src="/js/bundle.js"></script>
+</body>
+</html>

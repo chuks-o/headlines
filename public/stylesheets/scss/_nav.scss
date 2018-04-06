@@ -1,0 +1,27 @@
+nav {
+	background-color: rgb(32, 31, 31);
+	height: 45px;
+	display: flex;
+	width: 100%;
+	padding: 0;
+	margin: 0;
+
+	ul {
+		display: flex;
+		align-items: center;
+
+		li {
+			// flex: 0 0 auto;
+			list-style-type: none;
+		}
+		a {
+			text-decoration: none;
+			color: whitesmoke;
+		}
+		li:nth-child(1) {
+			margin-right: auto;
+			font-size: 20px;
+			font-weight: 600;
+		}
+	}
+}

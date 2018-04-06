@@ -1,0 +1,39 @@
+.card {
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    justify-content: center;
+    margin: 8px;
+    width: 95%;
+    background: #fff;
+    overflow: hidden;
+    border-radius: 2px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    a {
+        text-decoration: none;
+    }
+    .card-media {
+        img {
+            width: 100%;
+        }
+    }
+    .card-content {
+        padding: 15px;
+        background-color: #fff;   
+    }
+}
+
+/* Media queries */
+
+    @media screen and (min-width: 500px) {
+        .card {
+            margin: 16px;
+            box-shadow: 0 3px 7px rgba(0,0,0,0.15);
+        }
+    }
+
+    @media screen and (min-width: 700px) {
+        .card {
+            margin: 16px auto;
+        }
+    }
