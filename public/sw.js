@@ -1,16 +1,13 @@
-var staticCacheName = 'headline-static-v3';
+var staticCacheName = 'headline-static-v13';
 var contentImgsCache = 'headline-content-imgs';
-var allCaches = [
-    staticCacheName,
-    contentImgsCache
-];
 
 var filesToCache = [
     '/',
     'index.html',
-    'js/main.js',
-    'stylesheets/css/app.css',
-    'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'
+    'dist/js/bundle.js',
+    'dist/css/app.css',
+    'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css',
+    'https://fonts.googleapis.com/css?family=Source+Sans+Pro'
 ]
 
 self.addEventListener('install', function (event) {

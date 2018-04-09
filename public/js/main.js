@@ -4,20 +4,18 @@ class Headlines {
     
     constructor() {
         var sources = [
-            'techcrunch',
-            'abc-news',
-            'al-jazeera-english',
-            'bbc-news',
-            'bloomberg',
-            'cnn',
-            'espn',
-            'google-news',
-            'metro',
-            'news24',
-            'the-washington-post',
-        ]
+            'techcrunch', 'abc-news', 'al-jazeera-english', 'bbc-news', 'bloomberg',
+            'cnn', 'espn', 'google-news', 'metro', 'news24', 'the-washington-post',
+        ];
+        var countries = [
+            'ae', 'ar', 'at', 'au', 'be', 'bg', 'br', 'ca', 'ch', 'cn', 'co', 'cu', 'cz', 'de',
+            'eg','fr', 'gb', 'gr', 'hk', 'hu', 'id', 'ie', 'il', 'it', 'jp', 'kr', 'lt', 'lv', 
+            'ma','mx', 'my', 'ng', 'nl', 'no', 'nz', 'ph', 'pl', 'pt', 'ro', 'rs', 'ru', 'sa',
+            'se', 'sg', 'si', 'sk', 'th', 'tr', 'tw', 'ua', 'us', 've', 'za'
+        ];
 
         this.populateSource(sources)
+        this.populateCountry(countries)
         this.openDatabase()
         this.registerServiceWorker()
         this.showCachedPosts().then(function() {
@@ -84,11 +82,28 @@ class Headlines {
             if (data.status != 'ok') return
             app.cachePosts(data) 
         });
+    }
 
-        // try and reconnect in 5 seconds
-        setTimeout(function () {
-            app.openSocket();
-        }, 5000);
+    openSourceSocket(source) {
+        const API_KEY = 'd3119c6bc5da41b0b172a7f71466a063'
+        const BASE_URL = 'https://newsapi.org/v2'
+        const url = `${BASE_URL}/top-headlines?sources=${source}&apiKey=${API_KEY}`
+        return fetch(url).then(response => response.json())
+            .then(data => {
+                if (data.status != 'ok') return
+                app.cachePosts(data)
+            });
+    }
+
+    openCountrySocket(country) {
+        const API_KEY = 'd3119c6bc5da41b0b172a7f71466a063'
+        const BASE_URL = 'https://newsapi.org/v2'
+        const url = `${BASE_URL}/top-headlines?country=${country}&apiKey=${API_KEY}`
+        return fetch(url).then(response => response.json())
+            .then(data => {
+                if (data.status != 'ok') return
+                app.cachePosts(data)
+            });
     }
     
     cachePosts(data) {
@@ -125,6 +140,14 @@ class Headlines {
         document.querySelector('#source-names').insertAdjacentHTML('beforeend', selectOption)
     }
 
+    populateCountry(countries) {
+        var countryOption = ''
+        countries.forEach((country) => {
+            countryOption += `<option>${country}</option>`
+        })
+        document.querySelector('#country-names').insertAdjacentHTML('beforeend', countryOption)
+    }
+
     getSourceValue() {
         document.querySelector('#source-form').addEventListener('submit', (e) => {
             e.preventDefault()
@@ -133,22 +156,6 @@ class Headlines {
         })
     }
 
-    openSourceSocket(source) {
-        const API_KEY = 'd3119c6bc5da41b0b172a7f71466a063'
-        const BASE_URL = 'https://newsapi.org/v2'
-        const url = `${BASE_URL}/top-headlines?sources=${source}&apiKey=${API_KEY}`
-        return fetch(url).then(response => response.json())
-            .then(data => {
-                if (data.status != 'ok') return
-                app.cachePosts(data)
-            });
-        // try and reconnect in 5 seconds
-        setTimeout(function () {
-            app.openSourceSocket();
-        }, 5000);
-    }
-
-    
     displayPosts(data) {
         var content = ''
         var headlines = data.forEach(headline => {
@@ -176,6 +183,13 @@ document.querySelector('#source-form').addEventListener('submit', (e) => {
     const source = e.target.querySelector("select[name='source']").selectedOptions[0].value;
     app.openSourceSocket(source)
     console.log(source)
+})
+
+document.querySelector('#country-form').addEventListener('submit', (e) => {
+    e.preventDefault()
+    const country = e.target.querySelector("select[name='country']").selectedOptions[0].value;
+    app.openCountrySocket(country)
+    console.log(country)
 })
 
 

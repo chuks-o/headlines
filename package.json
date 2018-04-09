@@ -9,6 +9,7 @@
   "dependencies": {
     "babel-core": "^6.26.0",
     "babel-preset-env": "^1.6.1",
+    "browser-sync": "^2.23.6",
     "browserify": "^16.1.1",
     "cookie-parser": "~1.4.3",
     "cors": "^2.8.4",
@@ -26,6 +27,8 @@
     "node-sass": "^4.8.3",
     "nodemon": "^1.17.2",
     "path": "^0.12.7",
-    "vinyl-source-stream": "^2.0.0"
+    "run-sequence": "^2.2.1",
+    "vinyl-source-stream": "^2.0.0",
+    "watchify": "^3.11.0"
   }
 }
