@@ -1,5 +1,4 @@
-var staticCacheName = 'headline-static-v13';
-var contentImgsCache = 'headline-content-imgs';
+var staticCacheName = 'headline-static-v88'
 
 var filesToCache = [
     '/',
@@ -38,12 +37,32 @@ self.addEventListener('activate', function(event) {
                 })
             )
         })
-
     )
 })
 
-// self.addEventListener('message', function (event) {
-//     if (event.data.action === 'skipWaiting') {
-//         self.skipWaiting();
-//     }
-// });
+self.addEventListener('push', function (event) {
+    console.log('[Service Worker] Push Received.');
+
+    const title = 'Headlines';
+    const options = {
+        body: 'New headlines making the waves.',
+        tag: 'Headlines',
+        icon: './images/icons/icon-72x72.png',
+    };
+
+    event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', function (event) {
+    var url = '/';
+
+    event.notification.close(); //Close the notification
+
+    // Open the app and navigate to lthe home page after clicking the notification
+    event.waitUntil(
+        clients.openWindow(url)
+    );
+});
+
+
+

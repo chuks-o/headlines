@@ -3,7 +3,7 @@
     flex-direction: column;
     align-self: center;
     justify-content: center;
-    margin: 8px;
+    margin: 10px;
     width: 95%;
     background: #fff;
     overflow: hidden;
@@ -18,7 +18,7 @@
         }
     }
     .card-content {
-        padding: 15px;
+        padding: 0px 15px 15px;
         background-color: #fff;   
     }
 }
@@ -27,7 +27,7 @@
 
     @media screen and (min-width: 500px) {
         .card {
-            margin: 16px;
+            margin: 16px auto;
             box-shadow: 0 3px 7px rgba(0,0,0,0.15);
         }
     }

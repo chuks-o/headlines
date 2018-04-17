@@ -1,7 +1,22 @@
 {
     "name": "Headlines - A news aggregate PWA",
     "short_name": "Headlines",
+    "start_url": "/",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#fff",
+    "theme_color": "#201f1f",
     "icons": [
+        {
+            "src": "images/icons/icon-72x72.png",
+            "sizes": "72x72",
+            "type": "image/png"
+        },
+        {
+            "src": "images/icons/icon-96x96.png",
+            "sizes": "96x96",
+            "type": "image/png"
+        },
         {
             "src": "images/icons/icon-128x128.png",
             "sizes": "128x128",
@@ -38,8 +53,11 @@
             "type": "image/png"
         }
     ],
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#fff",
-    "theme_color": "#201f1f"
+    "author": {
+        "name": "Okpala Chukwualasu",
+        "website": "https://twitter.com/Davecodes01",
+        "github": "https://github.com/chuks-o",
+        "source-repo": "https://github.com/chuks-o/headlines"
+    },
+    "gcm_sender_id": "977925960147"
 }

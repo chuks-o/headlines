@@ -6,7 +6,8 @@ var browserify = require('browserify')
 var watchify = require('watchify')
 var uglify = require('gulp-uglify');
 var del = require('del');
-var runsequence = require('run-sequence');
+var runSequence = require('run-sequence');
+var gutil = require('gulp-util')
 
 
 /* Development Tasks 
@@ -32,33 +33,53 @@ gulp.task('sass', function () {
 })
 
 /* browserify */
-gulp.task('browserify', function () {
-    var bundler = browserify({
-        entries: 'public/js/main.js',
-        cache: {}, packageCache: {}, fullPaths: true, debug: true
-    });
+// gulp.task('browserify', function () {
+//     var bundler = browserify({
+//         entries: 'public/js/main.js',
+//         cache: {}, packageCache: {}, fullPaths: true, debug: true
+//     });
 
-    var bundle = function () {
-        return bundler
-            .bundle()
-            .on('error', function () { })
-            .pipe(source('bundle.js'))
-            .pipe(gulp.dest('public/dist/js'));
-    };
+//     var bundle = function () {
+//         return bundler
+//             .bundle()
+//             .on('error', function () { })
+//             .pipe(source('bundle.js'))
+//             .pipe(gulp.dest('public/dist/js'));
+//     };
 
-    if (global.isWatching) {
-        bundler = watchify(bundler);
-        bundler.on('update', bundle);
-    }
+//     if (global.isWatching) {
+//         bundler = watchify(bundler);
+//         bundler.on('update', bundle);
+//     }
 
-    return bundle();
-});
+//     return bundle();
+// });
+
+var bundle = function() {
+    return browserify({
+        cache:{}, packageCache:{}, 
+        entries: ['public/js/main.js'],
+        debug: true
+    })
+}
+
+var watch = watchify(bundle())
+
+watch.on('log', gutil.log)
+
+var bundler = function(pkg) {
+    return pkg.bundle()
+    .pipe(source('bundle.js'))
+    .pipe(gulp.dest('public/dist/js'))
+}
+
 
 // Watchers
 gulp.task('watch', function () {
+    bundler(watch)
+    watch.on('update', bundler.bind(null, bundle()))
     gulp.watch('public/stylesheets/scss/**/*.scss', ['sass']);
     gulp.watch('public/*.html', browserSync.reload);
-    gulp.watch('public/js/**/*.js', ['browserify']);
 })
 
 
@@ -66,15 +87,7 @@ gulp.task('watch', function () {
 // ---------------
 
 gulp.task('default', function (callback) {
-    runsequence(['sass', 'browserify','browserSync'], 'watch',
-        callback
-    )
+    runSequence(['sass', 'watch', 'browserSync'], 'watch',
+    callback
+)
 })
-
-// gulp.task('build', function (callback) {
-//     runSequence(
-//         'clean:dist',
-//         'sass',
-//         callback
-//     )
-// })

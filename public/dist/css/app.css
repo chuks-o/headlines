@@ -11,41 +11,8 @@ html, body {
 
 body {
   font-size: 1.45rem;
-  line-height: 1.6;
+  line-height: 1.4;
   background-color: whitesmoke; }
-
-nav {
-  background-color: #201f1f;
-  height: 45px;
-  display: flex;
-  width: 100%;
-  padding: 0;
-  margin: 0; }
-  nav ul {
-    display: flex;
-    align-items: center; }
-    nav ul li {
-      list-style-type: none; }
-    nav ul a {
-      text-decoration: none;
-      color: whitesmoke; }
-    nav ul li:nth-child(1) {
-      margin-right: auto;
-      font-size: 20px;
-      font-weight: 600; }
-
-.container {
-  display: flex;
-  flex-direction: column; }
-  .container .post-filter {
-    display: flex;
-    margin: 10px; }
-
-@media screen and (min-width: 700px) {
-  .container {
-    width: 700px;
-    margin-right: auto;
-    margin-left: auto; } }
 
 form {
   display: flex;
@@ -81,12 +48,81 @@ button[type="submit"] {
   min-width: 40px;
   margin-top: 11px; }
 
+button[class="notification"] {
+  font-size: 1.25rem;
+  background-color: lightseagreen;
+  color: #fff;
+  border: 0;
+  border-radius: 3px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  min-width: 80px;
+  line-height: 1;
+  height: 35px; }
+
+button[class="scroll"] {
+  font-size: 1.25rem;
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 25px;
+  z-index: 99;
+  border: none;
+  outline: none;
+  background-color: lightseagreen;
+  color: #fff;
+  border-radius: 3px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  min-width: 50px;
+  height: 35px;
+  line-height: 1; }
+
+nav {
+  background-color: #201f1f;
+  height: 45px;
+  display: flex;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  position: fixed;
+  top: 0;
+  overflow: hidden; }
+  nav ul {
+    display: flex;
+    align-items: center;
+    list-style: none; }
+    nav ul li {
+      list-style-type: none; }
+    nav ul a {
+      text-decoration: none;
+      color: whitesmoke; }
+    nav ul li:nth-child(1) {
+      font-size: 20px;
+      font-weight: 600; }
+    nav ul .active {
+      background: green; }
+
+.container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 40px; }
+  .container .post-filter {
+    display: flex;
+    margin: 10px 10px 10px 0px; }
+
+@media screen and (min-width: 700px) {
+  .container {
+    width: 700px;
+    margin-right: auto;
+    margin-left: auto; } }
+
 .card {
   display: flex;
   flex-direction: column;
   align-self: center;
   justify-content: center;
-  margin: 8px;
+  margin: 10px;
   width: 95%;
   background: #fff;
   overflow: hidden;
@@ -97,13 +133,13 @@ button[type="submit"] {
   .card .card-media img {
     width: 100%; }
   .card .card-content {
-    padding: 15px;
+    padding: 0px 15px 15px;
     background-color: #fff; }
 
 /* Media queries */
 @media screen and (min-width: 500px) {
   .card {
-    margin: 16px;
+    margin: 16px auto;
     box-shadow: 0 3px 7px rgba(0, 0, 0, 0.15); } }
 
 @media screen and (min-width: 700px) {

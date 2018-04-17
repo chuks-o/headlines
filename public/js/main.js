@@ -1,32 +1,36 @@
 var idb = require('idb')
+var pushNotification = require('./push')
+var scroll = require('./scroll')
+
+const API_KEY = 'd3119c6bc5da41b0b172a7f71466a063'
+const BASE_URL = 'https://newsapi.org/v2'
+
 
 class Headlines {
-    
     constructor() {
         var sources = [
             'techcrunch', 'abc-news', 'al-jazeera-english', 'bbc-news', 'bloomberg',
             'cnn', 'espn', 'google-news', 'metro', 'news24', 'the-washington-post',
-        ];
+        ]
+
         var countries = [
             'ae', 'ar', 'at', 'au', 'be', 'bg', 'br', 'ca', 'ch', 'cn', 'co', 'cu', 'cz', 'de',
-            'eg','fr', 'gb', 'gr', 'hk', 'hu', 'id', 'ie', 'il', 'it', 'jp', 'kr', 'lt', 'lv', 
-            'ma','mx', 'my', 'ng', 'nl', 'no', 'nz', 'ph', 'pl', 'pt', 'ro', 'rs', 'ru', 'sa',
+            'eg', 'fr', 'gb', 'gr', 'hk', 'hu', 'id', 'ie', 'il', 'it', 'jp', 'kr', 'lt', 'lv',
+            'ma', 'mx', 'my', 'ng', 'nl', 'no', 'nz', 'ph', 'pl', 'pt', 'ro', 'rs', 'ru', 'sa',
             'se', 'sg', 'si', 'sk', 'th', 'tr', 'tw', 'ua', 'us', 've', 'za'
-        ];
-
-        this.populateSource(sources)
-        this.populateCountry(countries)
+        ]     
+        this.populateFilters(sources, countries)
         this.openDatabase()
         this.registerServiceWorker()
-        this.showCachedPosts().then(function() {
-            app.openSocket()
-        })
+        this.cacheFirstStrategy()
+        this.mainSocketControl()
     }
 
+    /* Register a Service Worker */
     registerServiceWorker() {
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js').then(response => {
-                console.log('Service worker and IDB registered')
+            navigator.serviceWorker.register('/sw.js').then(reg => {
+                console.log('Service worker and Push Registered', reg)
             }).catch(error => {
                 console.log('Service worker registraton failed', error)
             })
@@ -41,10 +45,11 @@ class Headlines {
 
     online() {
         return window.addEventListener('online', function (e) {
-            alert('You are online')
+            console.log('You are online')
         }, false)
     }
 
+    /* Open a database, create an objectStore and an Index */
     openDatabase() {
         if (! navigator.serviceWorker) return
 
@@ -57,6 +62,7 @@ class Headlines {
         })
     }
 
+    /* Show cached posts */
     showCachedPosts() {
         return this.openDatabase().then(function(db) {
             if (!db) return
@@ -72,11 +78,21 @@ class Headlines {
         })
     }
 
+    /* Return posts from the cache first before the network */
+    cacheFirstStrategy() {
+        this.showCachedPosts().then(() => { app.openSocket() })
+    }
+
+    mainSocketControl() {
+        setInterval(function() {
+            app.showCachedPosts()
+                .then(app.openSocket())
+        }, 120000)
+    }
+
     // Make a request to the network
     openSocket() {
-        const API_KEY = 'd3119c6bc5da41b0b172a7f71466a063'
-        const BASE_URL = 'https://newsapi.org/v2/'
-        const url = `${BASE_URL}top-headlines?country=us&apiKey=${API_KEY}`
+        const url = `${BASE_URL}/top-headlines?country=us&apiKey=${API_KEY}`
         return fetch(url).then(response => response.json())
         .then(data => {
             if (data.status != 'ok') return
@@ -84,9 +100,8 @@ class Headlines {
         });
     }
 
+    /* Makes a request based on the source chosen */
     openSourceSocket(source) {
-        const API_KEY = 'd3119c6bc5da41b0b172a7f71466a063'
-        const BASE_URL = 'https://newsapi.org/v2'
         const url = `${BASE_URL}/top-headlines?sources=${source}&apiKey=${API_KEY}`
         return fetch(url).then(response => response.json())
             .then(data => {
@@ -95,9 +110,8 @@ class Headlines {
             });
     }
 
+    /* Makes a request based on the country chosen */
     openCountrySocket(country) {
-        const API_KEY = 'd3119c6bc5da41b0b172a7f71466a063'
-        const BASE_URL = 'https://newsapi.org/v2'
         const url = `${BASE_URL}/top-headlines?country=${country}&apiKey=${API_KEY}`
         return fetch(url).then(response => response.json())
             .then(data => {
@@ -106,6 +120,7 @@ class Headlines {
             });
     }
     
+    /* Cache posts from the network */
     cachePosts(data) {
         var posts = data.articles
         return this.openDatabase().then(function (db) {
@@ -117,7 +132,8 @@ class Headlines {
                 store.put(post);
                 console.log('saving posts to idb')
             });
-
+            
+            /* Delete old posts and keep the 20 most recent posts */
             store.index('by-date').openCursor(null, 'prev').then(function(cursor) {
                 return cursor.advance(20)
             }).then(function deletePosts(cursor) {
@@ -125,13 +141,40 @@ class Headlines {
                 cursor.delete()
                 return cursor.continue().then(deletePosts);
             })
-
-            app.displayPosts(data.articles)
-            console.log('From the Socket:', data.articles)
+            
+            app.sendPushNotification()
+                .then(app.displayPosts(data.articles))
+                    console.log('From the Socket:', data.articles)
         })
-
+    }
+    
+    /* sending push through to the user */
+    sendPushNotification () {
+        if (! navigator.serviceWorker) return
+        
+        return navigator.serviceWorker.ready
+            .then(function (registration) {
+                registration.pushManager.getSubscription()
+                    .then(function (subscription) {
+                        //If already access granted, send the push notification
+                        if (subscription) {
+                            setTimeout(() => {
+                                fetch('http://localhost:3333/api/notify', {
+                                    method: 'POST'
+                                })
+                                .then(() => {
+                                    console.log('dispatched the notification')
+                                })
+                            }, 10000)
+                        }
+                        else {
+                            return false
+                        }
+                    })
+                })        
     }
 
+    /* Populate the sources filter */
     populateSource(sources) {
         var selectOption = ''
         sources.forEach((source) => {
@@ -140,6 +183,7 @@ class Headlines {
         document.querySelector('#source-names').insertAdjacentHTML('beforeend', selectOption)
     }
 
+    /* Populate the country filter */
     populateCountry(countries) {
         var countryOption = ''
         countries.forEach((country) => {
@@ -148,14 +192,12 @@ class Headlines {
         document.querySelector('#country-names').insertAdjacentHTML('beforeend', countryOption)
     }
 
-    getSourceValue() {
-        document.querySelector('#source-form').addEventListener('submit', (e) => {
-            e.preventDefault()
-            const source = e.target.querySelector("select[name='source']").selectedOptions[0].value;
-            app.openSourceSocket(source)
-        })
+    populateFilters(sources, countries) {
+        this.populateSource(sources)
+        this.populateCountry(countries)
     }
 
+    /* Display Headlines */
     displayPosts(data) {
         var content = ''
         var headlines = data.forEach(headline => {
@@ -164,7 +206,7 @@ class Headlines {
                     <img src="${headline.urlToImage}" alt="Image">
                 </div>
                 <div class="card-content">
-                    <h1><a href="${headline.url}" target="_blank">${headline.title}</a></h1>
+                    <h2><a href="${headline.url}" target="_blank">${headline.title}</a></h2>
                     <p>${headline.description}</p>
                     <em>Source: ${headline.source.name}</em>
                 </div>
@@ -178,6 +220,7 @@ class Headlines {
 
 var app = new Headlines()
 
+/* Listen for a click event from the source filter and open a socket */
 document.querySelector('#source-form').addEventListener('submit', (e) => {
     e.preventDefault()
     const source = e.target.querySelector("select[name='source']").selectedOptions[0].value;
@@ -185,11 +228,10 @@ document.querySelector('#source-form').addEventListener('submit', (e) => {
     console.log(source)
 })
 
+/* Listen for a click event from the country filter and open a socket */
 document.querySelector('#country-form').addEventListener('submit', (e) => {
     e.preventDefault()
     const country = e.target.querySelector("select[name='country']").selectedOptions[0].value;
     app.openCountrySocket(country)
     console.log(country)
 })
-
-
